@@ -46,11 +46,23 @@ let callback_iter_number number =
 
 
 let callback_iter_line line =
-    let l = string_to_list line in
+    let numbers = string_to_list line in
 
     let is_safe = ref false in
+    let index = ref 0 in
 
-    ignore (List.iter callback_iter_number l);
+
+    while index < List.length numbers do
+    let item = (List.nth numbers !index) in
+    let item_next = (List.nth numbers !index+1) in
+    done
+
+    is_increasing (item item_next)
+
+
+
+
+    (* ignore (List.iter callback_iter_number numbers); *)
 
     printf "\n"
 
