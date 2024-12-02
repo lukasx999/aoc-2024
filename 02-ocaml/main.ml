@@ -12,8 +12,6 @@ let iter_line_by_line filename callback =
 
 
 
-
-
 let rec append_to_list list string index =
     if index == String.length string then
         list
@@ -27,19 +25,36 @@ let rec append_to_list list string index =
 
 
 
-
 (* "1 2 3" -> [ 1 ; 2 ; 3 ] *)
 let string_to_list input_string =
     List.rev (append_to_list [] input_string 0)
 
 
 
-let callback line =
+let is_decreasing a b =
+    let diff = a - b in
+    diff <= 3 && diff > 0
+
+let is_increasing a b =
+    let diff = b - a in
+    diff <= 3 && diff > 0
+
+
+
+let callback_iter_number number =
+    printf "%d " number
+
+
+let callback_iter_line line =
     let l = string_to_list line in
-    ignore (List.iter (fun x -> printf "%d " x) l);
+
+    let is_safe = ref false in
+
+    ignore (List.iter callback_iter_number l);
+
     printf "\n"
 
 
 
 let () =
-    ignore (iter_line_by_line "example.txt" callback);
+    ignore (iter_line_by_line "example.txt" callback_iter_line);
