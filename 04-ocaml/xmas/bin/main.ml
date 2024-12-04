@@ -5,6 +5,7 @@ open Printf
 
 let pattern = "XMAS"
 let filename = "example.txt"
+(* let filename = "input.txt" *)
 
 
 type 'a matrix = 'a list list
@@ -14,7 +15,7 @@ let string_to_chars (string : string) : char list =
     let rec inner string list =
         match string with
         | "" -> List.rev list
-        | str -> 
+        | _ -> 
             let tail = String.sub string 1 ((String.length string)-1) in
             let head = (String.get string 0) :: list in
             inner tail head
@@ -135,20 +136,13 @@ let rotate_matrix_45deg (matrix : char matrix) : char matrix =
 
                 let item = List.nth (List.nth matrix y) x in
                 if x + y == !counter then
-                    (
-                        buf := item :: !buf;
-                    )
-                else ();
-
+                    buf := item :: !buf;
 
             done;
-
-
         done;
-            new_matrix := !buf :: !new_matrix;
-            buf := [];
+        new_matrix := (List.rev !buf) :: !new_matrix;
+        buf := [];
         counter := !counter + 1;
-
 
     done;
 
@@ -156,19 +150,29 @@ let rotate_matrix_45deg (matrix : char matrix) : char matrix =
 
 
 
-
-
 let get_occurances (query : string) (filename : string) : int =
     let matrix: char matrix = read_file filename in
 
-    print_matrix (rotate_matrix_45deg matrix);
+    let a = matrix |> traverse_matrix_left_to_right query  in
+    let b = matrix |> rotate_matrix_180deg   |> traverse_matrix_left_to_right query in
+    let c = matrix |> rotate_matrix_90deg    |> traverse_matrix_left_to_right query in
+    let d = matrix |> rotate_matrix_neg90deg |> traverse_matrix_left_to_right query in
+    let e = matrix |> rotate_matrix_45deg    |> traverse_matrix_left_to_right query in
+    let f = matrix |> rotate_matrix_45deg    |> rotate_matrix_180deg |> traverse_matrix_left_to_right query in
+    let g = matrix |> rotate_matrix_180deg   |> rotate_matrix_45deg  |>  traverse_matrix_left_to_right query in
+    let h = matrix |> rotate_matrix_180deg   |> rotate_matrix_45deg  |> rotate_matrix_180deg |> traverse_matrix_left_to_right query in
 
-    let a = traverse_matrix_left_to_right query matrix in
-    let b = traverse_matrix_left_to_right query (rotate_matrix_180deg matrix) in
-    let c = traverse_matrix_left_to_right query (rotate_matrix_90deg matrix) in
-    let d = traverse_matrix_left_to_right query (rotate_matrix_neg90deg matrix) in
+    a + b + c + d + e + f + g + h
 
-    a + b + c + d
+
+
+
+let part_two (filename : string) : int =
+    (* TODO: this *)
+    let matrix: char matrix = read_file filename in
+    0
+
+
 
 
 
@@ -176,4 +180,4 @@ let get_occurances (query : string) (filename : string) : int =
 
 let () =
     (* printf "%d\n" (get_occurances pattern filename) *)
-    ignore (get_occurances pattern filename)
+    printf "%d\n" (part_two filename)
