@@ -1,4 +1,6 @@
 open Printf
+open Str
+
 
 
 let filename = "example.txt"
