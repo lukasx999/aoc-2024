@@ -122,13 +122,11 @@ let rotate_matrix_90deg (matrix : char matrix) : char matrix =
 (*     List.append rising falling *)
 
 
-(* let widthmap = [ 1 ; 2 ; 2 ; 2 ; 2 ; 1 ] in *)
+(* let widthmap = [ 1 ; 2 ; 2 ; 1 ] in *)
 let create_widthmap (width : int) : int list =
-    (* let rising = List.init (width) (fun x -> x+1) in *)
-    (* let falling = List.rev rising in *)
-    (* List.append rising falling *)
-    (* [ 1 ; 2 ; 2 ; 2 ; 2 ; 1 ] *)
-    [ 1 ; 2 ; 2 ; 1 ]
+    let rising = List.init (width-1) (fun x -> x+1) in
+    let falling = List.rev rising in
+    List.append rising falling
 
 
 
@@ -156,24 +154,34 @@ let merge_columns_to_list (matrix : char matrix) : char list =
 
 
 let rotate_matrix_45deg (matrix : char matrix) : char matrix =
-    let cols: char list = merge_columns_to_list matrix in
+    let cols : char list = merge_columns_to_list matrix in
     let stack = Stack.of_seq (List.to_seq cols) in
 
     let width = List.length (List.nth matrix 0) in
-    let wm = create_widthmap width in
+    let widthmap: int list = create_widthmap width in
 
-    let rec inner stack =
-        let item = Stack.pop_opt stack in
-        match item with
-        | None -> ()
-        | Some x -> inner stack
-    in
-    inner stack;
+    let new_matrix : char matrix ref = ref [] in
+    let buf = ref [] in
 
+    let index = ref 0 in
+    while !index < List.length widthmap do
 
+        let w = List.nth widthmap !index in
 
+        let j = ref 0 in
+        while !j < w do
+            let item = Stack.pop stack in
+            buf := item :: !buf;
+            j := !j + 1;
+        done;
+        j := 0;
 
-    List.rev matrix
+        new_matrix := (List.rev !buf) :: !new_matrix;
+        buf        := [];
+        index      := !index + 1;
+    done;
+
+    List.rev !new_matrix
 
 
 
@@ -182,8 +190,7 @@ let rotate_matrix_45deg (matrix : char matrix) : char matrix =
 let get_occurances (query : string) (filename : string) : int =
     let matrix: char matrix = read_file filename in
 
-    (* print_matrix (rotate_matrix_45deg matrix); *)
-    ignore (rotate_matrix_45deg matrix);
+    print_matrix (rotate_matrix_45deg matrix);
 
     let a = traverse_matrix_left_to_right query matrix in
     let b = traverse_matrix_left_to_right query (rotate_matrix_180deg matrix) in
