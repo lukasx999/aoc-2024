@@ -4,6 +4,9 @@ open Printf
 let filename = "example.txt"
 
 
+type 'a matrix = 'a list list
+
+
 let string_to_chars (string : string) : char list =
     let rec inner string list =
         match string with
@@ -23,14 +26,14 @@ let rec print_list (list : char list) =
     | head :: tail -> printf "%c " head; print_list tail
 
 
-let rec print_list_list (list : char list list) =
+let rec print_list_list (list : char matrix) =
     match list with
     | [] -> printf "\n"
     | head :: tail -> print_list head; print_list_list tail
 
 
 
-let read_file (filename : string) : char list list =
+let read_file (filename : string) : char matrix =
     let rec inner handle list =
         try
             let line = string_to_chars (input_line handle) in
@@ -43,6 +46,25 @@ let read_file (filename : string) : char list list =
 
 
 
+
+let traverse_list_left_to_right (matrix : char matrix) =
+
+    let rec check_line (list : char list) : bool =
+        (* let r = Str.rege *)
+        let s = String.of_seq (List.to_seq list) in
+        true
+    in
+
+    let rec inner matrix = 
+    match matrix with
+        | [] -> ()
+    | head :: tail -> inner tail
+
+    in inner matrix
+
+
+
+
 let () =
-    let f = read_file filename in
+    let f: char matrix = read_file filename in
     print_list_list f
