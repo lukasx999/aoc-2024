@@ -140,21 +140,19 @@ let rotate_matrix_45deg (matrix : char matrix) : char matrix =
                     )
                 else ();
 
-                if List.length !buf == !counter then
-                    (
-                        new_matrix := !buf :: !new_matrix;
-                        buf := [];
-                    )
-                else ()
 
             done;
+
+
         done;
+            new_matrix := !buf :: !new_matrix;
+            buf := [];
         counter := !counter + 1;
 
 
     done;
 
-    !new_matrix
+    List.rev !new_matrix
 
 
 
