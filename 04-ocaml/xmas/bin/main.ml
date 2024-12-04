@@ -51,6 +51,7 @@ let read_file (filename : string) : char matrix =
 
 let traverse_list_left_to_right (matrix : char matrix) =
 
+    let query = Str.regexp {| XMAS |} in
     let rec check_line (list : char list) : bool =
         (* let r = Str.rege *)
         let s = String.of_seq (List.to_seq list) in
