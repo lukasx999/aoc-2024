@@ -119,42 +119,79 @@ let rotate_matrix_90deg (matrix : char matrix) : char matrix =
 
 
 
-let rotate_matrix_45deg (matrix : char matrix) : char matrix =
 
-    let new_matrix: char matrix ref = ref [] in
-    let counter = ref 0 in
+
+
+
+
+
+
+
+
+
+
+
+(* let widthmap = [ 1 ; 2 ; 2 ; 1 ] in *)
+let create_widthmap (width : int) : int list =
+    let rising = List.init (width-1) (fun x -> x+1) in
+    let falling = List.rev rising in
+    List.append rising falling
+
+(* 123           *)
+(* 456 -> 142536 *)
+let merge_columns_to_list (matrix : char matrix) : char list =
+    let width = List.length (List.nth matrix 0) in
     let buf = ref [] in
 
-    let n = List.length (List.nth matrix 0) in
-    let m = List.length matrix in
-    let larger = if n > m then n else m in
+    let rec inner index =
+        if index == width then () else
 
-    while !counter != larger*2-1 do
-        for x = 0 to n-1 do
-            for y = 0 to m-1 do
+            let for_item = fun row ->
+                let x = (List.nth row index) in
+                buf := x :: !buf;
+            in
 
-                let item = List.nth (List.nth matrix y) x in
-                if x + y == !counter then
-                    (
-                        buf := item :: !buf;
-                    )
-                else ();
+            ignore (List.map for_item matrix);
+            inner (index+1)
 
-                if List.length !buf == !counter then
-                    (
-                        new_matrix := !buf :: !new_matrix;
-                        buf := [];
-                    )
-                else ()
+    in inner 0;
+    !buf
 
-            done;
+
+
+
+let rotate_matrix_45deg (matrix : char matrix) : char matrix =
+    (* TODO: 45deg matrix transformation *)
+
+
+    let cols : char list = merge_columns_to_list matrix in
+    let stack = Stack.of_seq (List.to_seq cols) in
+
+    let width = List.length (List.nth matrix 0) in
+    let widthmap: int list = create_widthmap width in
+
+    let new_matrix : char matrix ref = ref [] in
+    let buf = ref [] in
+
+    let index = ref 0 in
+    while !index < List.length widthmap do
+
+        let w = List.nth widthmap !index in
+
+        let j = ref 0 in
+        while !j < w do
+            let item = Stack.pop stack in
+            buf := item :: !buf;
+            j := !j + 1;
         done;
-        counter := !counter + 1;
+        j := 0;
 
-
+        new_matrix := (List.rev !buf) :: !new_matrix;
+        buf        := [];
+        index      := !index + 1;
     done;
 
-    !new_matrix
+    List.rev !new_matrix
 
 
 
@@ -163,7 +200,7 @@ let rotate_matrix_45deg (matrix : char matrix) : char matrix =
 let get_occurances (query : string) (filename : string) : int =
     let matrix: char matrix = read_file filename in
 
-    print_matrix (rotate_matrix_45deg matrix);
+    (* print_matrix (rotate_matrix_45deg matrix); *)
 
     let a = traverse_matrix_left_to_right query matrix in
     let b = traverse_matrix_left_to_right query (rotate_matrix_180deg matrix) in
@@ -177,5 +214,5 @@ let get_occurances (query : string) (filename : string) : int =
 
 
 let () =
-    (* printf "%d\n" (get_occurances pattern filename) *)
-    ignore (get_occurances pattern filename)
+    printf "%d\n" (get_occurances pattern filename)
+    (* ignore (get_occurances pattern filename) *)
